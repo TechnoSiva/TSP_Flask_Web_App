@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSP Solver</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Traveling Salesperson Problem Solver</h1>
+        <form method="POST">
+            <textarea id="cities-input" name="cities" placeholder="Enter cities, separated by commas or new lines">{{ request.form.get('cities', '') }}</textarea>
+
+            <!-- Transport Mode Selection -->
+            <label for="mode">Select Mode of Transport:</label>
+            <select name="mode" id="mode">
+                <option value="car">Car</option>
+                <option value="train">Train</option>
+                <option value="flight">Flight</option>
+            </select>
+
+            <button type="submit">Solve TSP</button>
+        </form>
+
+        {% if route %}
+        <h2>Optimal Route:</h2>
+        <ul>
+            {% for city in route %}
+                <li>{{ city }}</li>
+            {% endfor %}
+        </ul>
+        <p>Total Distance: {{ total_distance }} km</p>
+        <p>Estimated Travel Time (by {{ mode }}): {{ travel_time }} hours</p>
+        <img src="{{ url_for('static', filename=image) }}" alt="Optimal Route" class="optimal-route-image">
+
+        <!-- Form to download route as CSV -->
+        <form action="/download" method="POST">
+            {% for city in route %}
+                <input type="hidden" name="route" value="{{ city }}">
+            {% endfor %}
+            <input type="hidden" name="total_distance" value="{{ total_distance }}">
+            <input type="hidden" name="travel_time" value="{{ travel_time }}">
+            <input type="hidden" name="mode" value="{{ mode }}">
+            <button type="submit">Download Route as CSV</button>
+        </form>
+        <form method="GET" action="/">
+            <button type="submit">Go Back</button>
+        </form>
+        {% endif %}
+    </div>
+</body>
+</html>
